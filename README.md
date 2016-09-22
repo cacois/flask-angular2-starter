@@ -39,6 +39,39 @@ docker-compose up
 
 Note: The FLASK_CONFIGURATION environment variable will be picked up from your host machine and passed through to the Flask container, setting the server configuration mode.
 
+To build only the flask server container:
+
+```bash
+docker-compose build server
+```
+
+To build only the angular2 container:
+
+```bash
+docker-compose build client
+```
+
+To run the flask server container:
+
+```bash
+docker-compose up server
+```
+
+To run the angular2 container:
+
+```bash
+docker-compose up client
+```
+
+To connect to a running container:
+```bash
+docker exec -it server /bin/sh
+```
+or
+```bash
+docker exec -it client /bin/sh
+```
+
 ### Running locally
 
 #### Flask Backend
@@ -82,42 +115,3 @@ And launch the Angular2 frontend app:
 
 
 You can now navigate to `http://localhost:3000`. Login with default credentials : `admin:admin`
-
-### Docker support
-
-To build and launch everything at once, from project root:
-
-    docker-compose up
-
-To build only the flask server container:
-
-```bash
-docker-compose build server
-```
-
-To build only the angular2 container:
-
-```bash
-docker-compose build client
-```
-
-To run the flask server container:
-
-```bash
-docker-compose up server
-```
-
-To run the angular2 container:
-
-```bash
-docker-compose up client
-```
-
-To connect to a running container:
-```bash
-docker exec -it server /bin/sh
-```
-or
-```bash
-docker exec -it client /bin/sh
-```
