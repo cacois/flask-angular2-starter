@@ -20,7 +20,7 @@ export class LoginFormComponent implements OnInit {
 
   inputLogo = 'assets/img/angularclass-logo.png';
   model: UserComponent = new UserComponent(1, '', '');
-  logintext: string = 'Sign in to continue to the portal';
+  logintext: string = 'Sign in to continue';
   color: string = 'black';
   form: FormGroup;
   private forgotPassword: boolean = false;
