@@ -8,13 +8,15 @@ from flask import Flask
 from flask_cors import CORS
 from flask_security import Security, SQLAlchemyUserDatastore, utils
 
-from database.entities import Role, User, db
+from models import Role, User
+from extensions import db
 
 app = Flask(__name__)
 
-
+# defaults to production config
 CONFIG = {
     "development": "flask_app.config.DevelopmentConfig",
+    "ide_development": "flask_app.config.IDEDevelopmentConfig",
     "testing": "flask_app.config.TestingConfig",
     "production": "flask_app.config.ProductionConfig",
     "default": "flask_app.config.ProductionConfig"
@@ -58,6 +60,18 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
     SECRET_KEY = u'not-so-super-secret'
 
+class IDEDevelopmentConfig(BaseConfig):
+    """Default set of configurations for development mode with an IDE.
+    Disables Werkzeug reloader and interactive debugger"""
+
+    DEBUG = True
+    USE_DEBUGGER=False
+    USE_RELOADER=False
+    TESTING = False
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
+    SECRET_KEY = u'not-so-super-secret'
+
 
 class ProductionConfig(BaseConfig):
     """Default set of configurations for prod mode."""
@@ -86,7 +100,7 @@ def setup_logger():
     if not os.path.exists(generated_files):
         os.makedirs(generated_files)
 
-    format = "[%(asctime)s] [%(name)-30s] [%(levelname)-8s] %(message)s"
+    format = "[%(asctime)s] [%(name)-10s] [%(levelname)-8s] %(message)s"
     datefmt = '%Y-%m-%d %H:%M:%S'
 
     logger = logging.getLogger()
@@ -117,9 +131,10 @@ def setup_logger():
     print('Logging into directory {}\n'.format(generated_files))
 
 
-def configure_app(app):
+def configure_app():
     """Configure the app w.r.t Flask-security, databases, loggers."""
     config_name = os.getenv('FLASK_CONFIGURATION', 'default')
+    print("Configuring flask app for: {}".format(config_name))
     app.config.from_object(CONFIG[config_name])
 
     setup_logger()
@@ -130,7 +145,10 @@ def configure_app(app):
     # set up cross origin handling
     CORS(app, headers=['Content-Type'])
 
+def init_db():
+    print('create tables...')
     db.create_all()
+    print('tables created.')
     if not User.query.first():
         user_datastore.create_user(
             email=app.config['ADMIN_USER'],

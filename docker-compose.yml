@@ -1,18 +1,22 @@
 version: '2'
 services:
-  sample-backend:
-    build: ./backend
-    image: server:latest
+  server:
+    build: ./src/server
+    image: flask:latest
     ports:
       - "8081:8081"
-    container_name: python-backend
-  sample-frontend:
-    build: ./front
+    volumes:
+      - ./src/server/flask_app:/server/flask_app/
+    environment:
+      - FLASK_CONFIGURATION
+    container_name: flask-backend
+  client:
+    build: ./src/client
     image: angular2:latest
     container_name: angular2-frontend
     ports:
       - "3000:8080"
     links:
-      - sample-backend
+      - server
     depends_on:
-      - sample-backend
+      - server

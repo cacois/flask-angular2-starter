@@ -8,15 +8,9 @@ from flask_security import auth_token_required, utils
 from gevent.wsgi import WSGIServer
 
 from .app_utils import html_codes, token_login
-from .config import app, configure_app
+from .config import app, configure_app, init_db
 
 logger = logging.getLogger(__name__)
-
-
-@app.before_first_request
-def set_up():
-    """Configure the application to be used by the application."""
-    configure_app(app)
 
 
 @app.route("/api/logoutuser", methods=['POST'])
@@ -35,7 +29,7 @@ def login():
     return token_login.login_with_token(request, app)
 
 
-@app.route('/api/getdata', methods=['POST'])
+@app.route('/api/getdata', methods=['GET'])
 @auth_token_required
 def get_data():
     """Get dummy data returned from the server."""
@@ -45,16 +39,17 @@ def get_data():
                     status=html_codes.HTTP_OK_BASIC,
                     mimetype='application/json')
 
+@app.route('/api/test', methods=['GET'])
+def test():
+    return Response('wee')
 
-def main():
+def run():
     """Main entry point of the app."""
     try:
-        http_server = WSGIServer(('0.0.0.0', 8081),
-                                 app,
-                                 log=logging,
-                                 error_log=logging)
+        configure_app()
+        app.run('0.0.0.0', 8081)
+        init_db()
 
-        http_server.serve_forever()
     except Exception as exc:
         logger.error(exc.message)
     finally:
