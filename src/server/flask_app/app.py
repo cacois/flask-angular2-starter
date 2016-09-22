@@ -41,7 +41,7 @@ def get_data():
 
 @app.route('/api/test', methods=['GET'])
 def test():
-    return Response('wee')
+    return Response('test')
 
 def run():
     """Main entry point of the app."""

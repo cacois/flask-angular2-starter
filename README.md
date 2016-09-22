@@ -23,7 +23,7 @@ Set your local env variable FLASK_CONFIGURATION to "development" if you plan on 
 export FLASK_CONFIGURATION=development
 ```
 
-Or set it to "ide_development" if you wnat to use an IDE with step-through debugger:
+Or set it to "ide_development" if you are using an IDE with step-through debugger:
 
 ```bash
 export FLASK_CONFIGURATION=ide_development
@@ -83,27 +83,41 @@ And launch the Angular2 frontend app:
 
 You can now navigate to `http://localhost:3000`. Login with default credentials : `admin:admin`
 
-### Docker support:
+### Docker support
 
-1. Build the docker backend
+To build and launch everything at once, from project root:
 
-  ```bash
-  cd backend
-  docker build --no-cache  -t backend/python:latest .
-  docker run -it -p 8081:8081 --name server backend/python
-  ```
-  To connect to the running container:
-  ```bash
-  docker exec -it server /bin/sh
-  ```
-2. Build the frontend
+    docker-compose up
 
-  ```bash
-  cd front
-  docker build --no-cache  -t frontend/angular2:latest .
-  docker run -it -p 3000:8080 --name angular2-app frontend/angular2
-  ```
+To build only the flask server container:
 
-3. Navigate to `http://localhost:3000`  
+```bash
+docker-compose build server
+```
 
-4. Easiest way to run this application to run `docker-compose up` in the project root directory.
+To build only the angular2 container:
+
+```bash
+docker-compose build client
+```
+
+To run the flask server container:
+
+```bash
+docker-compose up server
+```
+
+To run the angular2 container:
+
+```bash
+docker-compose up client
+```
+
+To connect to a running container:
+```bash
+docker exec -it server /bin/sh
+```
+or
+```bash
+docker exec -it client /bin/sh
+```
