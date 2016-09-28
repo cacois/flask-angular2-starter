@@ -1,6 +1,6 @@
 FROM gliderlabs/alpine:latest
 
-COPY requirements.txt run.py /server/
+COPY requirements.txt manage.py /server/
 
 RUN apk --no-cache add \
     python \
@@ -24,4 +24,4 @@ USER app
 
 EXPOSE 8081
 
-CMD ["python", "run.py"]
+CMD ["python", "manage.py", "runserver"]

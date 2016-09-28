@@ -83,11 +83,16 @@ cd src/server
 sudo pip install -r requirements.txt
 ```
 
-Launch the backend app locally:
+First initialize the database and put in some test data (including an admin user):
 
-    python run.py
+    python manage.py initdb
+    python manage.py insert_data
 
-Or through your IDE.
+Then start the app locally:
+
+    python manage.py runserver
+
+Or start the app through your IDE, using the same manage.py command or by invoking app.py run() directly.
 
 To test the Flask API manually, navigate to http://localhost:8081/api/test
 

@@ -4,15 +4,6 @@ import logging
 import os
 from logging import handlers
 
-from flask import Flask
-from flask_cors import CORS
-from flask_security import Security, SQLAlchemyUserDatastore, utils
-
-from models import Role, User
-from extensions import db
-
-app = Flask(__name__)
-
 # defaults to production config
 CONFIG = {
     "development": "flask_app.config.DevelopmentConfig",
@@ -21,7 +12,6 @@ CONFIG = {
     "production": "flask_app.config.ProductionConfig",
     "default": "flask_app.config.ProductionConfig"
 }
-
 
 class BaseConfig(object):
     """Base class for default set of configs."""
@@ -50,7 +40,6 @@ class BaseConfig(object):
     ADMIN_USER = 'admin'
     ADMIN_PASSWORD = 'admin'
 
-
 class DevelopmentConfig(BaseConfig):
     """Default set of configurations for development mode."""
 
@@ -72,7 +61,6 @@ class IDEDevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
     SECRET_KEY = u'not-so-super-secret'
 
-
 class ProductionConfig(BaseConfig):
     """Default set of configurations for prod mode."""
 
@@ -82,7 +70,6 @@ class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'app.db')
     SECRET_KEY = u'Super-awesome-secret-stuff'
 
-
 class TestingConfig(BaseConfig):
     """Default set of configurations for test mode."""
 
@@ -90,7 +77,6 @@ class TestingConfig(BaseConfig):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SECRET_KEY = '792842bc-c4df-4de1-9177-d5207bd9faa6'
-
 
 def setup_logger():
     """Setup the logger with predefined formatting of time and rollup."""
@@ -129,28 +115,3 @@ def setup_logger():
     logger.addHandler(handler)
 
     print('Logging into directory {}\n'.format(generated_files))
-
-
-def configure_app():
-    """Configure the app w.r.t Flask-security, databases, loggers."""
-    config_name = os.getenv('FLASK_CONFIGURATION', 'default')
-    print("Configuring flask app for: {}".format(config_name))
-    app.config.from_object(CONFIG[config_name])
-
-    setup_logger()
-    db.init_app(app)
-    user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, user_datastore)
-
-    # set up cross origin handling
-    CORS(app, headers=['Content-Type'])
-
-def init_db():
-    print('create tables...')
-    db.create_all()
-    print('tables created.')
-    if not User.query.first():
-        user_datastore.create_user(
-            email=app.config['ADMIN_USER'],
-            password=utils.encrypt_password(app.config['ADMIN_PASSWORD']))
-        db.session.commit()
